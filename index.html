@@ -3,12 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="stylesheet" href="/src/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
+    <title>Módulo 05</title>
   </head>
   <body>
     <div id="app">
-      <h1>TypeScript Sandbox</h1>
+      <h1>Juego de las siete media</h1>
+      <div id="puntuacion"></div>
+      <img id="carta" src="https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/back.jpg" alt="Carta boca abajo">
+      <div id="mePlanto"></div>
+      <button id="pedirCarta">Dame Carta</button>
+      <button id="plantarse">Me planto</button>
+      <button id="nuevaPartida" style="display: none;">Nueva Partida</button>
+      <button id="verResultado" style="display: none;">Ver resultado</button>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
