@@ -21,7 +21,7 @@ const dameCarta = () : number => {
     return aleatorio > 7 ? aleatorio + 2 : aleatorio;
 };
 
-const puntosCarta = (carta: number) :number  => {
+const puntosCarta = (carta: number) : number  => {
     return carta <= 7 ? carta : 0.5;
 };
 
@@ -77,8 +77,6 @@ type Estado =
     | "MENOR_QUE_4"
     | "HA_SIDO_5"
     | "HA_SIDO_6_O_7"
-    | "GANAR_PARTIDA"
-    | "GAME_OVER"
     | "NINGUN_ESTADO";
 
 // GAME OVER Y GANAR PARTIDA
@@ -86,24 +84,61 @@ type Estado =
 const gameOver = () : boolean => 
     puntos > 7.5;
 
-const gestionarGameOver = (estado: Estado) => {
-    if (estado === "GAME_OVER") {
-        desactivarBotones();
-    }
-};
-
 const ganarPartida = () : boolean =>
     puntos === 7.5;
 
-const gestionarGanarPartida = (estado: Estado) => {
-        if (estado === "GANAR_PARTIDA") {
-            desactivarBotones();
-        }
+const botonesFinalPartida = () => {
+
+        if (botonPedirCarta !== null && botonPedirCarta !== undefined && botonPedirCarta instanceof HTMLButtonElement) {
+         botonPedirCarta.disabled = true;
+        } else {
+         console.error(`No se ha encontrado el elemento con id pedircarta`);
+        };
+     
+        if (botonMePlanto !== null && botonMePlanto !== undefined && botonMePlanto instanceof HTMLButtonElement) {
+         botonMePlanto.disabled = true;
+        } else {
+         console.error(`No se ha encontrado el elemento con id mePlanto`);
+        };
+     
+        if (botonNuevaPartida !== null && botonNuevaPartida !== undefined && botonNuevaPartida instanceof HTMLButtonElement) {
+         botonNuevaPartida.style.display = "inline";
+        } else {
+         console.error(`No se ha encontrado el elemento con id nuevaPartida`);
+        };
+     
+        if (botonVerResultado !== null && botonVerResultado !== undefined && botonVerResultado instanceof HTMLButtonElement) {
+         botonVerResultado.style.display = "none";
+        } else {
+         console.error(`No se ha encontrado el elemento con id verResultado`);
+        };
+     
+     };
+
+const gestionarFinalPartida = () => {
+    
+    let mensaje: string = "";
+
+    if (gameOver()) {
+        botonesFinalPartida();
+        mensaje = `¡Game Over! Tu puntuación superó 7.5`;
+
+    }
+    if (ganarPartida()) {
+        botonesFinalPartida();
+        mensaje = `¡Lo has clavado! ¡Enhorabuena!`;
+}
+const finalPartidaElement = document.getElementById("finalPartida");
+    if (finalPartidaElement !== null && finalPartidaElement !== undefined){
+        finalPartidaElement.innerHTML = mensaje;
+    } else {
+        console.error("No se ha encontrado el elemento con id finalPartida");
+    };
 };
 
 // PARTE 6 ME PLANTO
 
-const mensajePlantarse = (texto: string, estado: Estado) => {
+const mensajePlantarse = (estado: Estado) => {
     
     let mensaje: string = "";
 
@@ -117,13 +152,8 @@ const mensajePlantarse = (texto: string, estado: Estado) => {
         case "HA_SIDO_6_O_7":
         mensaje = `Casi, casi...`;
         break;
-        case "GANAR_PARTIDA":
-        mensaje = `¡Lo has clavado! ¡Enhorabuena!`;
-        case "GAME_OVER":
-        mensaje = `¡Game Over! Tu puntuación superó 7.5`;
-        break;
         case "NINGUN_ESTADO":
-        mensaje = `No deberías estar aquí`;
+        mensaje = ``;
         break;
     }
 
@@ -135,8 +165,7 @@ const mensajePlantarse = (texto: string, estado: Estado) => {
     };
 };
 
-const comprobarMePlanto = (texto: string) : Estado => {
-
+const comprobarMePlanto = (puntos: number) : Estado => {
         if (puntos < 4) {
             return "MENOR_QUE_4";
         }
@@ -146,37 +175,57 @@ const comprobarMePlanto = (texto: string) : Estado => {
         if (puntos >= 6 && puntos <= 7) {
             return "HA_SIDO_6_O_7";
         }
-        if (ganarPartida()) {
-            return "GANAR_PARTIDA";
-        }
-        if (gameOver()) {
-            return "GAME_OVER";
-        }
         return "NINGUN_ESTADO";
 };
 
 // BOTÓN ME PLANTO 
 
-const handleMePlanto = () => {
-    let texto: string = "";
-    //texto = sumarPuntuacion(carta: number);
-    const estado: Estado = comprobarMePlanto (texto);
-    mensajePlantarse(texto, estado);
+const botonesMePlanto = () => {
+    if (botonPedirCarta !== null && botonPedirCarta !== undefined && botonPedirCarta instanceof HTMLButtonElement) {
+        botonPedirCarta.disabled = true;
+        } else {
+        console.error(`No se ha encontrado el elemento con id pedircarta`);
+        };
 
-    };
+    if (botonVerResultado !== null && botonVerResultado !== undefined && botonVerResultado instanceof HTMLButtonElement) {
+        botonVerResultado.style.display = "inline";
+        } else {
+        console.error(`No se ha encontrado el elemento con id verResultado`);
+        };
+    
+    if (botonNuevaPartida !== null && botonNuevaPartida !== undefined && botonNuevaPartida instanceof HTMLButtonElement) {
+        botonNuevaPartida.style.display = "inline";
+        } else {
+        console.error(`No se ha encontrado el elemento con id nuevaPartida`);
+        };
+};
+
+const handleMePlanto = () => {
+    const estado: Estado = comprobarMePlanto(puntos);
+    mensajePlantarse(estado);
+    botonesMePlanto();
+};
     
 const botonMePlanto = document.getElementById("plantarse");
 botonMePlanto?.addEventListener("click", handleMePlanto);
 
 // BOTÓN PEDIR CARTA
 
+const botonesPedirCarta = () => {
+    if (botonVerResultado !== null && botonVerResultado !== undefined && botonVerResultado instanceof HTMLButtonElement) {
+        botonVerResultado.style.display = "none";
+       } else {
+        console.error(`No se ha encontrado el elemento con id verResultado`);
+       };    
+};
+
 const handlePedirCarta = () => {
     const carta = dameCarta();
     mostrarCarta(carta);
     sumarPuntuacion(carta);
     muestraPuntuacion();
-    gestionarGameOver(estado);
-    gestionarGanarPartida(estado);
+    gestionarFinalPartida();
+    botonesPedirCarta();
 };
 
 const botonPedirCarta = document.getElementById("pedirCarta");
@@ -184,12 +233,7 @@ botonPedirCarta?.addEventListener("click", handlePedirCarta);
 
 // BOTÓN NUEVA PARTIDA
 
-const handleNuevaPartida = () => {
-    puntos = 0;
-    mostrarCarta(0);
-    sumarPuntuacion(0);
-    muestraPuntuacion();
-
+const botonesNuevaPartida = () => {
     if (botonPedirCarta !== null && botonPedirCarta !== undefined && botonPedirCarta instanceof HTMLButtonElement) {
         botonPedirCarta.disabled = false;
        } else {
@@ -207,7 +251,22 @@ const handleNuevaPartida = () => {
        } else {
         console.error(`No se ha encontrado el elemento con id nuevaPartida`);
        };
+    
+       if (botonVerResultado !== null && botonVerResultado !== undefined && botonVerResultado instanceof HTMLButtonElement) {
+       botonVerResultado.style.display = "none";
+       } else {
+        console.error(`No se ha encontrado el elemento con id verResultado`);
+       };
+};
 
+const handleNuevaPartida = () => {
+    puntos = 0;
+    mostrarCarta(0);
+    sumarPuntuacion(0);
+    muestraPuntuacion();
+    gestionarFinalPartida();
+    mensajePlantarse("NINGUN_ESTADO");
+    botonesNuevaPartida();
 };
 
 const botonNuevaPartida = document.getElementById("nuevaPartida");
@@ -215,26 +274,6 @@ botonNuevaPartida?.addEventListener("click", (handleNuevaPartida));
 
 // BOTONES DESACTIVADOS
 
-const desactivarBotones = () => {
-
-   if (botonPedirCarta !== null && botonPedirCarta !== undefined && botonPedirCarta instanceof HTMLButtonElement) {
-    botonPedirCarta.disabled = true;
-   } else {
-    console.error(`No se ha encontrado el elemento con id pedircarta`);
-   };
-
-   if (botonMePlanto !== null && botonMePlanto !== undefined && botonMePlanto instanceof HTMLButtonElement) {
-    botonMePlanto.disabled = true;
-   } else {
-    console.error(`No se ha encontrado el elemento con id mePlanto`);
-   };
-
-   if (botonNuevaPartida !== null && botonNuevaPartida !== undefined && botonNuevaPartida instanceof HTMLButtonElement) {
-    botonNuevaPartida.style.display = "block";
-   } else {
-    console.error(`No se ha encontrado el elemento con id nuevaPartida`);
-   };
-};
 
 // BOTÓN VER RESULTADO
 
@@ -243,8 +282,7 @@ const handleVerResultado = () => {
         const carta = dameCarta();
         mostrarCarta(carta);
         sumarPuntuacion(carta);
-
-        if (estado === "GAME_OVER" || estado === "GANAR_PARTIDA") {
+        if (gameOver() || ganarPartida()) {
             break;
         }
 }
@@ -252,7 +290,3 @@ const handleVerResultado = () => {
 
 const botonVerResultado = document.getElementById("verResultado");
 botonVerResultado?.addEventListener("click", handleVerResultado);
-
-/*
-
-*/
