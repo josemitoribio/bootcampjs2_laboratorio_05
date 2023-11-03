@@ -1,10 +1,12 @@
-import "./style.css";
-
 // MÓDULO 05 - Condicionales - Laboratorio
 
-// PARTE 1 MOSTRAR PUNTUACIÓN
-
 let puntos : number = 0;
+
+type Estado =
+    | "MENOR_QUE_4"
+    | "HA_SIDO_5"
+    | "HA_SIDO_6_O_7"
+    | "NINGUN_ESTADO";
 
 const muestraPuntuacion = () => {
     const puntuacionElement = document.getElementById("puntuacion");
@@ -14,8 +16,6 @@ const muestraPuntuacion = () => {
     };
 };
 
-// PARTE 2 PEDIR CARTA 
-
 const dameCarta = () : number => {
     const aleatorio : number = Math.floor(Math.random() * 11);
     return aleatorio > 7 ? aleatorio + 2 : aleatorio;
@@ -24,8 +24,6 @@ const dameCarta = () : number => {
 const puntosCarta = (carta: number) : number  => {
     return carta <= 7 ? carta : 0.5;
 };
-
-// PARTE 3 MOSTRAR CARTA
 
 const dameUrlCarta = (carta:number) => {
     switch (carta) {
@@ -64,22 +62,9 @@ const mostrarCarta = (carta: number) => {
     };
 };
 
-// PARTE 4 SUMAR PUNTUACIÓN 
-
 const sumarPuntuacion = (carta: number) => {
     puntos += puntosCarta(carta);
-    muestraPuntuacion();
 };
-
-// ESTADOS
-
-type Estado =
-    | "MENOR_QUE_4"
-    | "HA_SIDO_5"
-    | "HA_SIDO_6_O_7"
-    | "NINGUN_ESTADO";
-
-// GAME OVER Y GANAR PARTIDA
 
 const gameOver = () : boolean => 
     puntos > 7.5;
@@ -113,7 +98,7 @@ const botonesFinalPartida = () => {
          console.error(`No se ha encontrado el elemento con id verResultado`);
         };
      
-     };
+};
 
 const gestionarFinalPartida = () => {
     
@@ -135,8 +120,6 @@ const finalPartidaElement = document.getElementById("finalPartida");
         console.error("No se ha encontrado el elemento con id finalPartida");
     };
 };
-
-// PARTE 6 ME PLANTO
 
 const mensajePlantarse = (estado: Estado) => {
     
@@ -178,7 +161,22 @@ const comprobarMePlanto = (puntos: number) : Estado => {
         return "NINGUN_ESTADO";
 };
 
-// BOTÓN ME PLANTO 
+const botonesPedirCarta = () => {
+    if (botonVerResultado !== null && botonVerResultado !== undefined && botonVerResultado instanceof HTMLButtonElement) {
+        botonVerResultado.style.display = "none";
+       } else {
+        console.error(`No se ha encontrado el elemento con id verResultado`);
+       };    
+};
+
+const handlePedirCarta = () => {
+    const carta = dameCarta();
+    mostrarCarta(carta);
+    sumarPuntuacion(carta);
+    muestraPuntuacion();
+    gestionarFinalPartida();
+    botonesPedirCarta();
+};
 
 const botonesMePlanto = () => {
     if (botonPedirCarta !== null && botonPedirCarta !== undefined && botonPedirCarta instanceof HTMLButtonElement) {
@@ -205,33 +203,6 @@ const handleMePlanto = () => {
     mensajePlantarse(estado);
     botonesMePlanto();
 };
-    
-const botonMePlanto = document.getElementById("plantarse");
-botonMePlanto?.addEventListener("click", handleMePlanto);
-
-// BOTÓN PEDIR CARTA
-
-const botonesPedirCarta = () => {
-    if (botonVerResultado !== null && botonVerResultado !== undefined && botonVerResultado instanceof HTMLButtonElement) {
-        botonVerResultado.style.display = "none";
-       } else {
-        console.error(`No se ha encontrado el elemento con id verResultado`);
-       };    
-};
-
-const handlePedirCarta = () => {
-    const carta = dameCarta();
-    mostrarCarta(carta);
-    sumarPuntuacion(carta);
-    muestraPuntuacion();
-    gestionarFinalPartida();
-    botonesPedirCarta();
-};
-
-const botonPedirCarta = document.getElementById("pedirCarta");
-botonPedirCarta?.addEventListener("click", handlePedirCarta);
-
-// BOTÓN NUEVA PARTIDA
 
 const botonesNuevaPartida = () => {
     if (botonPedirCarta !== null && botonPedirCarta !== undefined && botonPedirCarta instanceof HTMLButtonElement) {
@@ -269,24 +240,44 @@ const handleNuevaPartida = () => {
     botonesNuevaPartida();
 };
 
-const botonNuevaPartida = document.getElementById("nuevaPartida");
-botonNuevaPartida?.addEventListener("click", (handleNuevaPartida));
-
-// BOTONES DESACTIVADOS
-
-
-// BOTÓN VER RESULTADO
-
 const handleVerResultado = () => {
     while (true) {
         const carta = dameCarta();
         mostrarCarta(carta);
         sumarPuntuacion(carta);
+        muestraPuntuacion();
         if (gameOver() || ganarPartida()) {
             break;
         }
 }
 };
 
+const botonMePlanto = document.getElementById("plantarse");
+const botonPedirCarta = document.getElementById("pedirCarta");
+const botonNuevaPartida = document.getElementById("nuevaPartida");
 const botonVerResultado = document.getElementById("verResultado");
-botonVerResultado?.addEventListener("click", handleVerResultado);
+
+if (botonPedirCarta !== null && botonPedirCarta !== undefined && botonPedirCarta instanceof HTMLButtonElement) {
+    botonPedirCarta.addEventListener("click", handlePedirCarta);
+   } else {
+    console.error(`No se ha encontrado el elemento con id pedircarta`);
+   };
+
+if (botonMePlanto !== null && botonMePlanto !== undefined && botonMePlanto instanceof HTMLButtonElement) {
+    botonMePlanto.addEventListener("click", handleMePlanto);
+   } else {
+    console.error(`No se ha encontrado el elemento con id mePlanto`);
+   };
+
+if (botonNuevaPartida !== null && botonNuevaPartida !== undefined && botonNuevaPartida instanceof HTMLButtonElement) {
+    botonNuevaPartida.addEventListener("click", handleNuevaPartida);
+   } else {
+    console.error(`No se ha encontrado el elemento con id nuevaPartida`);
+   };
+
+if (botonVerResultado !== null && botonVerResultado !== undefined && botonVerResultado instanceof HTMLButtonElement) {
+    botonVerResultado.addEventListener("click", handleVerResultado);
+   } else {
+    console.error(`No se ha encontrado el elemento con id verResultado`);
+   };
+
