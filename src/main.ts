@@ -13,18 +13,15 @@ type Estado =
 const muestraPuntuacion = () => {
     const puntuacionElement = document.getElementById("puntuacion");
     if (puntuacionElement){
-        puntuacionElement
-        .innerHTML = `Esta es tu puntuación: ${puntos}`;
+        puntuacionElement.innerHTML = `Esta es tu puntuación: ${puntos}`;
     };
 };
 
-const numeroAleatorio = () : number => Math.floor(Math.random() * 11);
+const numeroAleatorio = () : number =>  Math.floor(Math.random() * 10) + 1;
 
-const numeroAleatorioReal = (numeroAleatorio: number) : number => 
-    numeroAleatorio > 7 ? numeroAleatorio + 2 : numeroAleatorio;
+const numeroCarta = (carta: number) : number => carta > 7 ? carta + 2 : carta;
 
-const puntosCarta = (carta: number) : number  => 
-    carta <= 7 ? carta : 0.5;
+const puntosCarta = (carta: number) : number  => carta <= 7 ? carta : 0.5;    
 
 const dameUrlCarta = (carta: number) => {
     switch (carta) {
@@ -56,15 +53,23 @@ const dameUrlCarta = (carta: number) => {
 const mostrarCarta = (carta: number) => {
     const urlCarta = dameUrlCarta(carta);
     const elementoCarta = document.getElementById("carta");
+
     if (elementoCarta !== null && elementoCarta !== undefined && elementoCarta instanceof HTMLImageElement) {
         elementoCarta.src = urlCarta;
     } else {
         console.error(`No se ha encontrado el elemento con id carta`);
-    };
+    }
 };
 
-const sumarPuntuacion = (carta: number) => {
-    puntos += puntosCarta(carta);
+const sumarPuntuacion = (carta: number) => puntos += carta;
+
+const pintarMensajes = (mensaje: string) => {
+    const mePlantoElement = document.getElementById("mePlanto");
+    if (mePlantoElement !== null && mePlantoElement !== undefined){
+        mePlantoElement.innerHTML = mensaje;
+    } else {
+        console.error("No se ha encontrado el elemento con id mePlanto");
+    };
 };
 
 const mensajesPuntuacion = (estado: Estado) => {
@@ -85,22 +90,12 @@ const mensajesPuntuacion = (estado: Estado) => {
         break;
         case "PERDIDO":
         mensaje = `¡Game Over! Tu puntuación superó 7.5`;
+        break;
         case "NINGUN_ESTADO":
         mensaje = ``;
         break;
     };
-};
-
-const pintarMensajes = (estado: Estado) => {
-    mensajesPuntuacion(estado);
-
-    let mensaje: string ="";
-    const mePlantoElement = document.getElementById("mePlanto");
-    if (mePlantoElement !== null && mePlantoElement !== undefined){
-        mePlantoElement.innerHTML = mensaje;
-    } else {
-        console.error("No se ha encontrado el elemento con id mePlanto");
-    };
+    pintarMensajes(mensaje);
 };
 
 const comprobarEstadoPartida = (puntos: number) : Estado => {
@@ -114,30 +109,56 @@ const comprobarEstadoPartida = (puntos: number) : Estado => {
             return "HA_SIDO_6_O_7";
         }
         if (puntos === 7.5) {
-            return "GANADO"
+            return "GANADO";
         }
         if (puntos > 7.5) {
-            return "PERDIDO"
+            return "PERDIDO";
         }
         return "NINGUN_ESTADO";
 };
 
 const botonesPedirCarta = () => {
-    if (botonVerResultado !== null && botonVerResultado !== undefined && botonVerResultado instanceof HTMLButtonElement) {
-        botonVerResultado.style.display = "none";
-       } else {
-        console.error(`No se ha encontrado el elemento con id verResultado`);
-       };    
+    if (botonPedirCarta !== null && botonPedirCarta !== undefined && botonPedirCarta instanceof HTMLButtonElement) {
+    botonPedirCarta.disabled = true;
+    } else {
+    console.error(`No se ha encontrado el elemento con id pedircarta`);
+    };
+    
+    if (botonMePlanto !== null && botonMePlanto !== undefined && botonMePlanto instanceof HTMLButtonElement) {
+    botonMePlanto.disabled = true;
+    } else {
+    console.error(`No se ha encontrado el elemento con id mePlanto`);
+    };
+
+    if (botonQueHabriaPasado !== null && botonQueHabriaPasado !== undefined && botonQueHabriaPasado instanceof HTMLButtonElement) {
+    botonQueHabriaPasado.style.display = "none";
+    } else {
+    console.error(`No se ha encontrado el elemento con id verResultado`);
+    };
+    
+    if (botonNuevaPartida !== null && botonNuevaPartida !== undefined && botonNuevaPartida instanceof HTMLButtonElement) {
+    botonNuevaPartida.style.display = "inline";
+    } else {
+    console.error(`No se ha encontrado el elemento con id nuevaPartida`);
+    };
 };
 
-const handlePedirCarta = () => {
-    const carta = numeroAleatorio();
+const ganarOPerder = () => {
+    const estado = comprobarEstadoPartida(puntos);
+    if (estado === "GANADO" || estado === "PERDIDO") {
+        mensajesPuntuacion(estado);
+        botonesPedirCarta();
+    }
+};
+
+const handlePedirCarta = () : void => {
+    const valorAleatorio = numeroAleatorio();
+    const carta = numeroCarta(valorAleatorio);
+    const puntos = puntosCarta (carta);
     mostrarCarta(carta);
-    sumarPuntuacion(carta);
+    sumarPuntuacion(puntos);
     muestraPuntuacion();
-    botonesPedirCarta();
-    const estado = comprobarEstadoPartida(carta);
-    pintarMensajes(estado);
+    ganarOPerder();
 };
 
 const botonesMePlanto = () => {
@@ -147,8 +168,8 @@ const botonesMePlanto = () => {
         console.error(`No se ha encontrado el elemento con id pedircarta`);
         };
 
-    if (botonVerResultado !== null && botonVerResultado !== undefined && botonVerResultado instanceof HTMLButtonElement) {
-        botonVerResultado.style.display = "inline";
+    if (botonQueHabriaPasado !== null && botonQueHabriaPasado !== undefined && botonQueHabriaPasado instanceof HTMLButtonElement) {
+        botonQueHabriaPasado.style.display = "inline";
         } else {
         console.error(`No se ha encontrado el elemento con id verResultado`);
         };
@@ -162,7 +183,7 @@ const botonesMePlanto = () => {
 
 const handleMePlanto = () => {
     const estado: Estado = comprobarEstadoPartida(puntos);
-    pintarMensajes(estado);
+    mensajesPuntuacion(estado);
     botonesMePlanto();
 };
 
@@ -170,7 +191,7 @@ const botonesNuevaPartida = () => {
     if (botonPedirCarta !== null && botonPedirCarta !== undefined && botonPedirCarta instanceof HTMLButtonElement) {
         botonPedirCarta.disabled = false;
        } else {
-        console.error(`No se ha encontrado el elemento con id pedircarta`);
+        console.error(`No se ha encontrado el elemento con id pedirCarta`);
        };
     
     if (botonMePlanto !== null && botonMePlanto !== undefined && botonMePlanto instanceof HTMLButtonElement) {
@@ -185,8 +206,8 @@ const botonesNuevaPartida = () => {
         console.error(`No se ha encontrado el elemento con id nuevaPartida`);
        };
     
-       if (botonVerResultado !== null && botonVerResultado !== undefined && botonVerResultado instanceof HTMLButtonElement) {
-       botonVerResultado.style.display = "none";
+    if (botonQueHabriaPasado !== null && botonQueHabriaPasado !== undefined && botonQueHabriaPasado instanceof HTMLButtonElement) {
+        botonQueHabriaPasado.style.display = "none";
        } else {
         console.error(`No se ha encontrado el elemento con id verResultado`);
        };
@@ -198,25 +219,31 @@ const handleNuevaPartida = () => {
     sumarPuntuacion(0);
     muestraPuntuacion();
     botonesNuevaPartida();
+    mensajesPuntuacion("NINGUN_ESTADO");
 };
 
-const handleVerResultado = () => {
-    const carta = numeroAleatorio();
+const handleQueHabriaPasado = () => {
+    const valorAleatorio = numeroAleatorio();
+    const carta = numeroCarta(valorAleatorio);
+    const puntos = puntosCarta (carta);
         mostrarCarta(carta);
-        sumarPuntuacion(carta);
+        sumarPuntuacion(puntos);
         muestraPuntuacion();
+        mensajesPuntuacion("NINGUN_ESTADO");
 };
 
 const botonMePlanto = document.getElementById("plantarse");
 const botonPedirCarta = document.getElementById("pedirCarta");
 const botonNuevaPartida = document.getElementById("nuevaPartida");
-const botonVerResultado = document.getElementById("verResultado");
+const botonQueHabriaPasado = document.getElementById("queHabriaPasado");
 
 const eventos = () => {
+    mostrarCarta(0);
+    muestraPuntuacion();
     if (botonPedirCarta !== null && botonPedirCarta !== undefined && botonPedirCarta instanceof HTMLButtonElement) {
         botonPedirCarta.addEventListener("click", handlePedirCarta);
        } else {
-        console.error(`No se ha encontrado el elemento con id pedircarta`);
+        console.error(`No se ha encontrado el elemento con id pedirCarta`);
        };
     
     if (botonMePlanto !== null && botonMePlanto !== undefined && botonMePlanto instanceof HTMLButtonElement) {
@@ -231,8 +258,8 @@ const eventos = () => {
         console.error(`No se ha encontrado el elemento con id nuevaPartida`);
        };
     
-    if (botonVerResultado !== null && botonVerResultado !== undefined && botonVerResultado instanceof HTMLButtonElement) {
-       botonVerResultado.addEventListener("click", handleVerResultado);
+    if (botonQueHabriaPasado !== null && botonQueHabriaPasado !== undefined && botonQueHabriaPasado instanceof HTMLButtonElement) {
+        botonQueHabriaPasado.addEventListener("click", handleQueHabriaPasado);
        } else {
       console.error(`No se ha encontrado el elemento con id verResultado`);
       };
