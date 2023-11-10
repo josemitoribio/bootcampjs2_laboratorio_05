@@ -65,7 +65,7 @@ const sumarPuntuacion = (carta: number) => puntos += carta;
 
 const pintarMensajes = (mensaje: string) => {
     const mePlantoElement = document.getElementById("mePlanto");
-    if (mePlantoElement !== null && mePlantoElement !== undefined){
+    if (mePlantoElement !== null && mePlantoElement !== undefined && mePlantoElement instanceof HTMLElement){
         mePlantoElement.innerHTML = mensaje;
     } else {
         console.error("No se ha encontrado el elemento con id mePlanto");
@@ -185,6 +185,12 @@ const handleMePlanto = () => {
     const estado: Estado = comprobarEstadoPartida(puntos);
     mensajesPuntuacion(estado);
     botonesMePlanto();
+
+    if (botonMePlanto !== null && botonMePlanto !== undefined && botonMePlanto instanceof HTMLButtonElement) {
+        botonMePlanto.disabled = true;
+        } else {
+        console.error(`No se ha encontrado el elemento con id verResultado`);
+        };
 };
 
 const botonesNuevaPartida = () => {
@@ -220,6 +226,12 @@ const handleNuevaPartida = () => {
     muestraPuntuacion();
     botonesNuevaPartida();
     mensajesPuntuacion("NINGUN_ESTADO");
+
+    if (botonQueHabriaPasado !== null && botonQueHabriaPasado !== undefined && botonQueHabriaPasado instanceof HTMLButtonElement) {
+        botonQueHabriaPasado.disabled = false;
+        } else {
+        console.error(`No se ha encontrado el elemento con id verResultado`);
+        };
 };
 
 const handleQueHabriaPasado = () => {
@@ -230,6 +242,13 @@ const handleQueHabriaPasado = () => {
         sumarPuntuacion(puntos);
         muestraPuntuacion();
         mensajesPuntuacion("NINGUN_ESTADO");
+
+    if (botonQueHabriaPasado !== null && botonQueHabriaPasado !== undefined && botonQueHabriaPasado instanceof HTMLButtonElement) {
+        botonQueHabriaPasado.disabled = true;
+        } else {
+        console.error(`No se ha encontrado el elemento con id verResultado`);
+        };
+    
 };
 
 const botonMePlanto = document.getElementById("plantarse");
